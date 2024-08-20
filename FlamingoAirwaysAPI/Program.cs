@@ -1,6 +1,7 @@
 using FlamingoAirwaysAPI.Models;
+using FlamingoAirwaysAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using static FlamingoAirwaysAPI.Models.FlamingoAirwaysModel;
+//using static FlamingoAirwaysAPI.Models.FlamingoAirwaysModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<FlamingoAirwaysDB>
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("nwCnString")));
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IPaymentRepository,PaymentRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

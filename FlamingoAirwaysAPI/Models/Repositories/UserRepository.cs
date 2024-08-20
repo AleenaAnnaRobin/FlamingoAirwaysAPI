@@ -1,38 +1,56 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+//using FlamingoAirwaysAPI.Models.Interfaces;
+//using FlamingoAirwaysAPI.Models.FlamingoAirwaysDbContext;
+using FlamingoAirwaysAPI.Models;
 
 namespace FlamingoAirwaysAPI.Models
 {
     public class UserRepository : IUserRepository
-
     {
-        public Task AddUser(FlamingoAirwayModel.User user)
+        private readonly FlamingoAirwaysDB _context;
+
+        public UserRepository(FlamingoAirwaysDB context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<IEnumerable<FlamingoAirwayModel.User>> GetAllUsers()
+        public async Task<User> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Users.FindAsync(id);
         }
 
-        public Task<FlamingoAirwayModel.User> GetUserByEmail(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public Task<FlamingoAirwayModel.User> GetUserById(int id)
+        public async Task<IEnumerable<User>> GetAllAsync() // Implement this method
         {
-            throw new NotImplementedException();
+            return await _context.Users.ToListAsync();
         }
 
-        public Task RemoveUser(int id)
+        public async Task AddAsync(User user)
         {
-            throw new NotImplementedException();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
 
-        public Task UpdateUser(FlamingoAirwayModel.User user)
+        public async Task UpdateAsync(User user)
         {
-            throw new NotImplementedException();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

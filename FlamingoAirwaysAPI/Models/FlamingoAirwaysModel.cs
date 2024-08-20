@@ -1,167 +1,189 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlamingoAirwaysAPI.Models
 {
-    public class FlamingoAirwayModel
+    public class FlamingoAirwaysDB : DbContext
     {
-        public class User
+        public FlamingoAirwaysDB(DbContextOptions<FlamingoAirwaysDB> options) : base(options)
         {
-            [Key]
-            [Required]
-            public int UserId { get; set; }
 
-            [Required]
-            [StringLength(50)]
-            [MinLength(2)]
-            public string FirstName { get; set; }
-
-            [Required]
-            [StringLength(50)]
-            [MinLength(2)]
-            public string LastName { get; set; }
-
-            [Required]
-            [DataType(DataType.EmailAddress)]
-            [StringLength(100)]
-            public string Email { get; set; }
-
-            [Required]
-            [StringLength(64)] // Assuming a fixed length for the hash
-            public string Password { get; set; }
-
-            public string PhoneNo { get; set; }
-
-            [Required]
-            [StringLength(20)]
-            public string Role { get; set; } // Admin or Customer
-
-            //public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         }
+        public DbSet<Flight> Flights { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+    }
+    [Table("Users")]
+    public class User
+    {
+        [Key]
 
-        public class Flight
-        {
-            [Key]
-            [Required]
-            public int FlightId { get; set; }
+        public int UserId { get; set; }
 
-            [Required]
-            [StringLength(100)]
-            public string Origin { get; set; }
+        [Required]
+        [StringLength(50)]
+        [MinLength(2)]
+        public string FirstName { get; set; }
 
-            [Required]
-            [StringLength(100)]
-            public string Destination { get; set; }
+        [Required]
+        [StringLength(50)]
+        [MinLength(2)]
+        public string LastName { get; set; }
 
-            [Required]
-            [DataType(DataType.DateTime)]
-            public DateTime DepartureDate { get; set; }
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        [StringLength(100)]
+        public string Email { get; set; }
 
-            [Required]
-            [DataType(DataType.DateTime)]
-            public DateTime ArrivalDate { get; set; }
+        [Required]
+        [StringLength(64)] // Assuming a fixed length for the hash
+        public string Password { get; set; }
 
-            [Required]
-            [DataType(DataType.Currency)]
-            [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
-            public decimal Price { get; set; }
+        public string PhoneNo { get; set; }
 
-            [Required]
-            [Range(0, int.MaxValue)]
-            public int TotalNumberOfSeats { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string Role { get; set; } // Admin or Customer
 
-            [Required]
-            [Range(0, int.MaxValue)]
-            public int AvailableSeats { get; set; }
 
-            //public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-        }
+    }
 
-        public class Booking
-        {
-            [Key]
-            [Required]
-            public int BookingId { get; set; }
+    [Table("Flights")]
+    public class Flight
+    {
+        [Key]
 
-            [Required]
-            public int FlightId { get; set; }
+        public int FlightId { get; set; }
 
-            [Required]
-            public int UserId { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Origin { get; set; }
 
-            [Required]
-            [DataType(DataType.DateTime)]
-            public DateTime BookingDate { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Destination { get; set; }
 
-            [Required]
-            [StringLength(20)]
-            public string PNR { get; set; }
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime DepartureDate { get; set; }
 
-            [Required]
-            public bool IsCancelled { get; set; }
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime ArrivalDate { get; set; }
 
-            //[ForeignKey("FlightId")]
-            //public Flight Flight { get; set; }
+        [Required]
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
+        public decimal Price { get; set; }
 
-            //[ForeignKey("UserId")]
-            //public User User { get; set; }
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int TotalNumberOfSeats { get; set; }
 
-            //public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-        }
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int AvailableSeats { get; set; }
 
-        public class Ticket
-        {
-            [Key]
-            [Required]
-            public int TicketId { get; set; }
+    }
 
-            [Required]
-            public int BookingId { get; set; }
+    [Table("Bookings")]
+    public class Booking
+    {
+        [Key]
 
-            [Required]
-            [StringLength(5)]
-            public string SeatNumber { get; set; }
+        public int BookingId { get; set; }
 
-            [Required]
-            [Column(TypeName = "decimal(18,2)")]
-            public decimal Price { get; set; }
+        [ForeignKey("Flights")]
+        public int FlightIdFK { get; set; }
 
-            //[ForeignKey("BookingId")]
-            //public Booking Booking { get; set; }
-        }
+        [ForeignKey("Users")]
+        public int UserId_FK { get; set; }
 
-        public class Payment
-        {
-            [Key]
-            [Required]
-            public int PaymentId { get; set; }
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime BookingDate { get; set; }
 
-            [Required]
-            public int BookingId { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string PNR { get; set; }
 
-            [Required]
-            [StringLength(20)]
-            public string PaymentType { get; set; } // CreditCard or DebitCard
+        [Required]
+        public bool IsCancelled { get; set; }
 
-            [Required]
-            [StringLength(16, MinimumLength = 13)]
-            [DataType(DataType.CreditCard)]
-            public string CardNumber { get; set; }
-            [Required]
-            [StringLength(16, MinimumLength = 5)]
-            public string CardHolderName { get; set; }
 
-            [Required]
-            [DataType(DataType.DateTime)]
-            public DateTime PaymentDate { get; set; }
+        public User Users { get; set; }
 
-            [Required]
-            [DataType(DataType.Currency)]
-            [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
-            public decimal Amount { get; set; }
+        public Flight Flights { get; set; }
 
-            //[ForeignKey("BookingId")]
-            //public Booking Booking { get; set; }
-        }
+
+    }
+
+    [Table("Tickets")]
+    public class Ticket
+    {
+        [Key]
+
+        public int TicketId { get; set; }
+
+        [ForeignKey("Bookings")]
+        public int BookingIdF { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string SeatNumber { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string PassengerName { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
+
+        
+
+        public Booking Bookings { get; set; }
+    }
+
+    [Table("Payments")]
+    public class Payment
+    {
+        [Key]
+
+        public int PaymentId { get; set; }
+
+        [ForeignKey("Bookings")]
+        public int BookingIdFK { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string PaymentType { get; set; } // CreditCard or DebitCard
+
+        [Required]
+        [StringLength(16, MinimumLength = 13)]
+        [DataType(DataType.CreditCard)]
+        public string CardNumber { get; set; }
+        [Required]
+        [StringLength(16, MinimumLength = 5)]
+        public string CardHolderName { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime PaymentDate { get; set; }
+
+        [Required]
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
+        public decimal Amount { get; set; }
+
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
+        public decimal Retainer { get; set; }
+
+        public Booking Bookings { get; set; }
     }
 }
+

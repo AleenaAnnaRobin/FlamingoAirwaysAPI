@@ -1,14 +1,15 @@
-﻿using static FlamingoAirwaysAPI.Models.FlamingoAirwayModel;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FlamingoAirwaysAPI.Models
 {
     public interface IUserRepository
     {
-        Task<User> GetUserById(int id);
-        Task<IEnumerable<User>> GetAllUsers();
-        Task<User> GetUserByEmail(string email);
-        Task AddUser(User user);
-        Task UpdateUser(User user);
-        Task RemoveUser(int id);
+        Task<User> GetByIdAsync(int id);
+        Task<User> GetByEmailAsync(string email);
+        Task<IEnumerable<User>> GetAllAsync(); // Add this line
+        Task AddAsync(User user);
+        Task UpdateAsync(User user);
+        Task DeleteAsync(int id);
     }
 }

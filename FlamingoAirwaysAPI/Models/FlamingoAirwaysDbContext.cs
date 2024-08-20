@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static FlamingoAirwaysAPI.Models.FlamingoAirwayModel;
+using static FlamingoAirwaysAPI.Models.FlamingoAirwaysModel;
 
 namespace FlamingoAirwaysAPI.Models
 {

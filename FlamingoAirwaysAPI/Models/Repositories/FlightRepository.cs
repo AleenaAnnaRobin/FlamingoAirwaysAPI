@@ -1,6 +1,6 @@
-﻿using FlamingoAirwaysAPI.Models.Inteface;
+﻿using FlamingoAirwaysAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using static FlamingoAirwaysAPI.Models.FlamingoAirwayModel;
+using static FlamingoAirwaysAPI.Models.FlamingoAirwaysModel;
 using static FlamingoAirwaysAPI.Models.FlamingoAirwaysModel;
 
 namespace FlamingoAirwaysAPI.Models
@@ -12,12 +12,17 @@ namespace FlamingoAirwaysAPI.Models
         {
             _context = context;
         }
-        public async Task AddFlight(FlamingoAirwayModel.Flight flight)
+        public async Task AddFlight(Flight flight)
         {
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
         }
+        public async Task<Flight> GetByIdAsync(int id)
+        {
+            return await _context.Flights.FindAsync(id);
+        }
+
 
         public async Task<IEnumerable<Flight>> GetAllFlights()
         {
@@ -62,6 +67,35 @@ namespace FlamingoAirwaysAPI.Models
                 .ToListAsync();
         }
 
+        public async Task UpdateFlightnew(Flight flight)
+        {
+            _context.Flights.Update(flight);
+             await _context.SaveChangesAsync();
+        }
 
+        public async Task<Flight> GetByBookingIdAsync(int bookingId)
+        {
+            var bookingX = _context.Bookings.Find(bookingId);
+
+            var FlightIdX = bookingX.FlightIdFK;
+
+            return await _context.Flights
+                     .SingleOrDefaultAsync(f => f.FlightId == FlightIdX);
+
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var flight = await _context.Flights.FindAsync(id);
+            if (flight != null)
+            {
+                _context.Flights.Remove(flight);
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task UpdateAsync(Flight flight)
+        {
+            _context.Flights.Update(flight);
+            await _context.SaveChangesAsync();
+        }
     }
 }
