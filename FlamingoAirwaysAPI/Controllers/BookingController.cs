@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace FlamingoAPI.Controllers
 {
@@ -29,11 +30,21 @@ namespace FlamingoAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking([FromBody] BookingRequest request)
         {
-            if (request == null || request.Seats <= 0 || string.IsNullOrEmpty(request.Payment.CardNumber))
+
+            if (!Regex.IsMatch(request.CVV.ToString(), @"^\d{3}$"))
             {
-                return BadRequest("Invalid request data.");
+                return BadRequest("Invalid CVV. It must be 3 digits.");
+            }
+            if (!Regex.IsMatch(request.Payment.CardNumber, @"^\d{12}$"))
+            {
+                return BadRequest("Invalid card number. It must be 12 digits.");
             }
 
+            var validBank = new List<string> { "Kotak", "SBI", "Axis", "HDFC" };
+            if (!validBank.Contains(request.BankName))
+            {
+                return BadRequest("Invalid bank name. Please select a valid bank.");
+            }
             var flight = await _flightRepo.GetFlightById(request.FlightId);
             if (flight == null)
             {
@@ -76,19 +87,20 @@ namespace FlamingoAPI.Controllers
                 var ticket = new Ticket
                 {
                     BookingIdF = booking.BookingId,
-                    //SeatNumber = flight.AvailableSeats - i +1,
-
-                    SeatNumber = $"Seat-{flight.AvailableSeats - i }", // Generate seat number as needed
+                    SeatNumber = $"Seat-{flight.AvailableSeats - i}", // Generate seat number as needed
                     PassengerName = request.PassengerNames[i],
                     Price = flight.Price
                 };
 
                 await _ticketRepo.AddAsync(ticket);
             }
+            //decrease seat from flight 
             flight.AvailableSeats = flight.AvailableSeats - request.Seats;
-            await _flightRepo.UpdateFlightnew(flight);
+            await _flightRepo.UpdateAsync(flight);
             return CreatedAtAction(nameof(GetBooking), new { id = booking.BookingId }, booking);
         }
+
+
 
         // GET api/Booking/5
         [HttpGet("{id}")]
@@ -197,8 +209,12 @@ namespace FlamingoAPI.Controllers
         public int FlightId { get; set; }
         public int UserId { get; set; }
         public int Seats { get; set; }
+       
         public List<string> PassengerNames { get; set; }
         public PaymentRequest Payment { get; set; }
+        public string BankName { get;  set; }
+        public int CVV { get; set; }
+       
     }
 
     // DTO for payment details
