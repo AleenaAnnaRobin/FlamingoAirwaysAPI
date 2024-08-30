@@ -1,4 +1,6 @@
 ﻿using FlamingoAirwaysAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -18,16 +20,9 @@ namespace FlamingoAirwaysAPI.Controllers
         {
             _repo = repo;
         }
-        // GET: api/<FlamingoAirwaysController>
-        //[HttpGet]
-        //public async Task<List<FlamingoAirwaysModel>> ShowAll()
-        //{
-        //    return _repo.GetAllFlights();
-        //}
-
-
-        // GET api/<CategoryController>/5
+       
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<FlamingoAirwaysModel>>> ShowAll()
         {
             var flights = await _repo.GetAllFlights();
@@ -36,6 +31,7 @@ namespace FlamingoAirwaysAPI.Controllers
 
         // GET api/flight/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<FlamingoAirwaysModel>> FindFlight(int id)
         {
             var flight = await _repo.GetFlightById(id);
@@ -48,6 +44,7 @@ namespace FlamingoAirwaysAPI.Controllers
 
         // GET: api/Flight
         [HttpGet("origin")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights([FromQuery] string origin, [FromQuery] string destination, [FromQuery] DateTime departureDate)
         {
             var flights = await _repo.SearchFlightsAsync(origin, destination, departureDate);
@@ -59,6 +56,7 @@ namespace FlamingoAirwaysAPI.Controllers
 
         // POST api/<FlamingoAirwaysController>
         [HttpPost]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Post([FromBody] Flight value)
         {
             if (value == null)
@@ -73,8 +71,9 @@ namespace FlamingoAirwaysAPI.Controllers
         // PUT api/<FlamingoAirwaysController>/5
         
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutFlight(int id, [FromBody] Flight flight)
-        {
+        {       
             // Check if the flight object is null
             if (flight == null)
             {
@@ -86,11 +85,6 @@ namespace FlamingoAirwaysAPI.Controllers
             {
                 return BadRequest("Invalid flight ID.");
             }
-
-            //if (id != flight.FlightId)
-            //{
-            //    return BadRequest("Flight ID mismatch.");
-            //}
 
             // Fetch the existing flight from the database
             var existingFlight = await _repo.GetByIdAsync(id);
@@ -125,6 +119,7 @@ namespace FlamingoAirwaysAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Delete(int id)
         {
             var existingFlight = await _repo.GetFlightById(id);

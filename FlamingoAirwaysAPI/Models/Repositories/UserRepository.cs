@@ -52,5 +52,26 @@ namespace FlamingoAirwaysAPI.Models
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<bool> HasDuplicateEmailAsync(string email)
+        {
+            // Count the number of users with the given email
+            var count = await _context.Users
+                .Where(u => u.Email == email)
+                .CountAsync();
+
+            // If count is greater than 1, it means there are duplicates
+            return count > 1;
+        }
+
+        public Task<User> GetByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<User> GetUserDetails(string userId)
+        {
+            //throw new NotImplementedException();
+            return await _context.Users.Where(b => b.UserId == userId).FirstOrDefaultAsync();
+        }
     }
 }

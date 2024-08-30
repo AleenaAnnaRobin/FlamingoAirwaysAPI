@@ -19,5 +19,5 @@ namespace FlamingoAirwaysAPI.Models
             public DbSet<Payment> Payments { get; set; }
             public DbSet<Ticket> Tickets { get; set; }
         }
-    }  
+    }
 }

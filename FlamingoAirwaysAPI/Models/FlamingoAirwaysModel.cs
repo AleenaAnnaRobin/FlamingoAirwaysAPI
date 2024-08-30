@@ -20,8 +20,8 @@ namespace FlamingoAirwaysAPI.Models
     public class User
     {
         [Key]
-
-        public int UserId { get; set; }
+        [Required]
+        public string UserId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -93,14 +93,15 @@ namespace FlamingoAirwaysAPI.Models
     public class Booking
     {
         [Key]
-
+        
         public int BookingId { get; set; }
 
         [ForeignKey("Flights")]
         public int FlightIdFK { get; set; }
 
         [ForeignKey("Users")]
-        public int UserId_FK { get; set; }
+        [Required]
+        public string UserId_FK { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
@@ -143,7 +144,7 @@ namespace FlamingoAirwaysAPI.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        
+
 
         public Booking Bookings { get; set; }
     }
@@ -182,8 +183,10 @@ namespace FlamingoAirwaysAPI.Models
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")] // Adjust based on your needs
         public decimal Retainer { get; set; }
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Refund { get; set; }
 
         public Booking Bookings { get; set; }
     }
 }
-

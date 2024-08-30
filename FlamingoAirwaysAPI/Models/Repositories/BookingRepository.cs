@@ -15,7 +15,7 @@ namespace FlamingoAirwaysAPI.Models
             _context = context;
         }
 
-        public async Task<IEnumerable<Booking>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<Booking>> GetByUserIdAsync(string userId)
         {
             return await _context.Bookings
                 .Where(b => b.UserId_FK == userId) // Use UserIdFK instead of UserId
@@ -63,5 +63,21 @@ namespace FlamingoAirwaysAPI.Models
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+        {
+            return await _context.Bookings.ToListAsync();
+                
+        }
+
+        //public async Task<IEnumerable<Booking>> GetBookingsByUserId(int userId)
+        //{
+        //    return await _context.Bookings
+        //                    .Where(b => b.UserId_FK == userId)
+        //                    .ToListAsync();
+        //}
+       
+
+
     }
 }
